@@ -60,7 +60,7 @@ class Tree {
             return self.root
         } else if value < parent.value {
             if let left = parent.left {
-                insert(value, parent: left)
+                return insert(value, parent: left)
             } else {
                 parent.left = Node(value: value)
                 parent.left?.parent = parent
@@ -68,7 +68,7 @@ class Tree {
             }
         } else if value > parent.value {
             if let right = parent.right {
-                insert(value, parent: right)
+                return insert(value, parent: right)
             } else {
                 parent.right = Node(value: value)
                 parent.right?.parent = parent
@@ -112,6 +112,92 @@ class Tree {
         grandparent.color = .Red
         checkCase1(grandparent)
     }
+    
+    //Caso 4: "The parent P is red but the uncle U is black; also, the current node N is the right child of P, and P in turn is the left child of its parent G. In this case, a left rotation on P that switches the roles of the current node N and its parent P can be performed;"
+    private func checkCase4(inserted: Node) {
+        var inserted = inserted
+        guard let parent = inserted.parent, grandparent = inserted.grandparent() else {
+            //This should never be reached.
+            return fatalError()
+        }
+        if inserted === inserted.parent.right && parent === grandparent.left {
+            rotateRight(parent)
+            inserted = inserted.left
+        } else if inserted === parent.left && parent === grandparent.right {
+            rotateLeft(parent)
+            inserted = inserted.right
+        }
+        checkCase5(inserted)
+    }
+    
+    //Caso 5: O pai é vermelho mas o tio é negro?
+    private func checkCase5(inserted: Node) {
+        guard let parent = inserted.parent, grandparent = inserted.grandparent() else {
+            //This should never be reached.
+            return fatalError()
+        }
+        parent.color = .Black
+        grandparent.color = .Red
+        if inserted === parent.left {
+            rotateRight(grandparent)
+        } else {
+            rotateLeft(grandparent)
+        }
+    }
+    
+    private func rotateLeft(node: Node) {
+        let newRoot = node.right
+        node.right = newRoot.left
+        if newRoot.left !== nil {
+            newRoot.left.parent = node
+        }
+        newRoot.parent = node.parent
+        if node.parent === nil {
+            root = newRoot
+        } else if node === node.parent.left {
+            node.parent.left = newRoot
+        } else {
+            node.parent.right = newRoot
+        }
+        newRoot.left = node
+        node.parent = newRoot
+    }
+    
+    private func rotateRight(node: Node) {
+        let newRoot = node.left
+        node.left = newRoot.right
+        if newRoot.right !== nil {
+            newRoot.right.parent = node
+        }
+        newRoot.parent = node.parent
+        if node.parent === nil {
+            root = newRoot
+        } else if node === node.parent.right {
+            node.parent.right = newRoot
+        } else {
+            node.parent.left = newRoot
+        }
+        newRoot.right = node
+        node.parent = newRoot
+    }
+    
+    func search(value: Int) -> Node? {
+        return search(node: root, value: value)
+    }
+    
+    private func search(node node: Node, value: Int) -> Node? {
+        if node.value == value {
+            print("Found it.")
+            return node
+        } else if value < node.value && node.left?.value != nil {
+            return search(node: node.left, value: value)
+        } else if value > node.value && node.right?.value != nil {
+            return search(node: node.right, value: value)
+        } else {
+            print("Value not found")
+            return nil
+        }
+    }
 }
 
 extension Node {
@@ -129,80 +215,18 @@ extension Node {
 }
 
 let tree = Tree(value: 8)
+tree.insert(2)
+tree.insert(10)
+tree.insert(9)
+tree.insert(11)
+tree.insert(1)
+tree.insert(7)
+tree.insert(12)
+tree.insert(13)
+tree.insert(14)
 tree.root?.draw()
-    
-  /*  func add(value: T) {
-        if self.value == nil {
-            self.value = value
-            self.color = .Black
-        } else if value < self.value {
-            if self.left == nil {
-                self.left = Tree(value: value)
-                self.left!.color = self.color == .Black ? .Red : .Black
-                balanceIfNeeded()
-            } else {
-                self.left?.add(value)
-            }
-        } else if value > self.value {
-            if self.right == nil {
-                self.right = Tree(value: value)
-                self.right!.color = self.color == .Black ? .Red : .Black
-                balanceIfNeeded()
-            } else {
-                self.right?.add(value)
-            }
-        } else {
-            print("Value already added to the tree.")
-        }
-    }
-    
-    private func balanceIfNeeded() {
-        
-    }
-    
-    func search(value: T) -> Tree? {
-        if self.value == value {
-            print("Found it.")
-            return self
-        } else if value < self.value && self.left?.value != nil {
-            return self.left?.search(value)
-        } else if value > self.value && self.right?.value != nil {
-            return self.right?.search(value)
-        } else {
-            print("Value not found")
-            return nil
-        }
-    } */
-/*
-extension Tree {
-    func draw() {
-        right?.draw("", " |  ", "    ")
-        print("\(value!)(\(color.rawValue))")
-        left?.draw("", "    ", " |  ")
-    }
-    
-    func draw(indent: String, _ leftIndent: String, _ rightIndent: String) {
-        right?.draw(rightIndent, rightIndent + " |  ", rightIndent + "    ")
-        print(indent + " +- " + "\(value!)(\(color.rawValue))")
-        left?.draw(leftIndent, leftIndent + "    ", leftIndent + " |  ")
-    }
-}
-
-
-let tree = Tree(value: 8)
-tree.add(2)
-tree.add(10)
-tree.add(9)
-tree.add(11)
-tree.add(1)
-tree.add(7)
-tree.add(12)
-tree.add(13)
-tree.add(14)
-tree.draw()
 print("================")
 print("Searching for 11")
 let eleven = tree.search(11)
- */
 
 //: [Next](@next)
