@@ -37,6 +37,17 @@ class Node {
             return grandparent.left
         }
     }
+    
+    func sibling() -> Node? {
+        guard self.parent != nil else {
+            return nil
+        }
+        if self === self.parent.left {
+            return self.parent.right
+        } else {
+            return self.parent.left
+        }
+    }
 }
 
 class Tree {
@@ -51,7 +62,7 @@ class Tree {
         guard let insertedNode = insert(value, parent: root) else {
             return
         }
-        balanceIfNeeded(insertedNode)
+        balanceIfNeeded(insertedNode: insertedNode)
     }
     
     private func insert(value: Int, parent: Node) -> Node? {
@@ -79,7 +90,7 @@ class Tree {
         }
     }
     
-    private func balanceIfNeeded(insertedNode: Node) {
+    private func balanceIfNeeded(insertedNode insertedNode: Node) {
         checkCase1(insertedNode)
     }
     
@@ -181,6 +192,171 @@ class Tree {
         node.parent = newRoot
     }
     
+    func delete(x: Int) {
+        guard let toDel = search(x) else {
+            return
+        }
+        deleteNode(toDel)
+    }
+    
+    //Function call for removing a node
+    private func deleteNode(toDel: Node!) {
+        var toDel = toDel
+        //case for if todel is the only node in the tree
+        if toDel.left === nil && toDel.right === nil && toDel.parent === nil {
+            toDel = nil
+            self.root = nil
+            return
+        }
+        //case for if toDell is a red node w/ no children
+        if toDel.left === nil && toDel.right === nil && toDel.color == .Red {
+            if toDel!.parent.left === toDel! {
+                toDel!.parent.left = nil
+                toDel = nil
+            } else if toDel!.parent === nil {
+                toDel = nil
+            } else {
+                toDel?.parent.right = nil
+                toDel = nil
+            }
+            return
+        }
+        //case for toDel having two children
+        if toDel!.left !== nil && toDel!.right !== nil {
+            let pred = maximum(toDel!.left!)
+            toDel!.value = pred.value
+            toDel! = pred
+        }
+        //case for toDel having one child
+        var child: Node? = nil
+        if toDel!.right === nil {
+            child = toDel!.left
+        } else {
+            child = toDel!.right
+        }
+        if toDel.color == .Black && child !== nil {
+            toDel!.color = child!.color
+            checkDeleteCase1(toDel)
+        }
+        if child !== nil {
+            replaceNode(toDel!, n2: child!)
+            if toDel.parent === nil && child !== nil {
+                child?.color = .Black
+            }
+        }
+        if toDel!.parent.left === toDel! {
+            toDel!.parent.left = nil
+            toDel = nil
+            return
+        } else if toDel!.parent === nil {
+            toDel = nil
+            return
+        } else {
+            toDel?.parent.right = nil
+            toDel = nil
+            return
+        }
+    }
+    
+    private func maximum(rootnode: Node) -> Node {
+        var rootNode = rootnode
+        while rootNode.right !== nil {
+            rootNode = rootNode.right
+        }
+        return rootNode
+    }
+    
+    private func replaceNode(n1: Node, n2: Node) {
+        let temp = n1.value
+        let temp_color = n1.color
+        n1.value = n2.value
+        n1.color = n2.color
+        n2.value = temp
+        n2.color = temp_color
+    }
+    
+    private func checkDeleteCase1(deleted: Node) {
+        guard deleted.parent != nil else {
+            return
+        }
+        checkDeleteCase2(deleted)
+    }
+    
+    private func checkDeleteCase2(deleted: Node) {
+        guard let s = deleted.sibling() else {
+            return
+        }
+        guard s.color == .Red else  {
+            return
+        }
+        deleted.parent.color = .Red
+        s.color = .Black
+        if deleted === deleted.parent.left {
+            rotateLeft(deleted.parent)
+        } else {
+            rotateRight(deleted.parent)
+        }
+        checkDeleteCase3(deleted)
+    }
+    
+    private func checkDeleteCase3(deleted: Node) {
+        guard let s = deleted.sibling() else {
+            return
+        }
+        if s.parent.color == .Red && s.color == .Black && s.left.color == .Black && s.right.color == .Black {
+            s.color = .Red
+            checkDeleteCase1(deleted.parent)
+        } else {
+            checkDeleteCase4(deleted)
+        }
+    }
+    
+    private func checkDeleteCase4(deleted: Node) {
+        guard let s = deleted.sibling() else {
+            return
+        }
+        if deleted.parent.color == .Red && s.color == .Black && s.left.color == .Black && s.right.color == .Black {
+            s.color = .Red
+            deleted.parent.color = .Black
+        } else {
+            checkDeleteCase5(deleted)
+        }
+    }
+    
+    private func checkDeleteCase5(deleted: Node) {
+        guard let s = deleted.sibling() else {
+            return
+        }
+        if s.color == .Black {
+            if deleted === deleted.parent.left && s.right.color == .Black && s.left.color == .Red {
+                s.color = .Red
+                s.left.color = .Black
+                rotateRight(s)
+            } else if deleted === deleted.parent.right && s.left.color == .Black && s.right.color == .Red {
+                s.color = .Red
+                s.right.color = .Black
+                rotateLeft(s)
+            }
+        }
+        checkDeleteCase6(deleted)
+    }
+    
+    private func checkDeleteCase6(deleted: Node) {
+        guard let s = deleted.sibling() else {
+            return
+        }
+        s.color = deleted.parent.color
+        deleted.parent.color = .Black
+        if deleted === deleted.parent.left {
+            s.right.color = .Black
+            rotateLeft(deleted.parent)
+        } else {
+            s.left.color = .Black
+            rotateRight(deleted.parent)
+        }
+    }
+
+    
     func search(value: Int) -> Node? {
         return search(node: root, value: value)
     }
@@ -224,6 +400,7 @@ tree.insert(7)
 tree.insert(12)
 tree.insert(13)
 tree.insert(14)
+tree.delete(14)
 tree.root?.draw()
 print("================")
 print("Searching for 11")
