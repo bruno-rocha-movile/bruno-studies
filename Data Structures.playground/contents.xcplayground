@@ -5,7 +5,8 @@
         <page name='Queue'/>
         <page name='Stack'/>
         <page name='Binary Tree'/>
-        <page name='R-B Binary Tree'/>
         <page name='Hash Table'/>
+        <page name='R-B Binary Tree'/>
+        <page name='Sorting'/>
     </pages>
 </playground>
