@@ -83,6 +83,100 @@ extension SequenceType where Generator.Element == Int {
         }
         return input
     }
+    
+    //************
+    //************
+    
+    //0(n2) at it's worst, 0(n log n) at it's average case
+    var quickSort: [Int] {
+        guard var input = self as? [Int] else {
+            return [Int]()
+        }
+        quick(&input, left: 0, right: input.count-1)
+        return input
+    }
+    
+    private func quick(inout input: [Int], left: Int, right: Int) {
+        if (left < right) {
+            let newPivot = partition(&input, pivot: left, right: right);
+            quick(&input, left: left, right: newPivot - 1);
+            quick(&input, left: newPivot + 1, right: right);
+        }
+    }
+    
+    private func partition(inout input: [Int], pivot: Int, right: Int) -> Int {
+        let x = input[right]
+        var j = pivot - 1
+        for i in pivot..<right {
+            if x >= input[i] {
+                j = j + 1
+                let aux = input[j]
+                input[j] = input[i]
+                input[i] = aux
+            }
+        }
+        input[right] = input[j+1]
+        input[j+1] = x
+        return j + 1
+    }
+    
+    //************
+    //************
+    
+    //0(n log2 n)
+    var mergeSort: [Int] {
+        guard var input = self as? [Int] else {
+            return [Int]()
+        }
+        mergeSort(&input, start: 0, end: input.count-1)
+        return input
+    }
+    
+    private func mergeSort(inout input:[Int], start:Int, end:Int) {
+        var i = 0, j = 0, k = 0
+        guard start != end else {
+            return
+        }
+        let half = (start + end) / 2
+        mergeSort(&input, start: start, end: half)
+        mergeSort(&input, start: half + 1, end: end)
+        i = start;
+        j = half + 1;
+        var auxArray = Array<Int>(count: end - start + 1, repeatedValue: 0)
+        while(i < half + 1 || j  < end + 1) {
+            if (i == half + 1 ) {
+                auxArray[k] = input[j];
+                j += 1;
+                k += 1;
+            }
+            else {
+                if (j == end + 1) {
+                    auxArray[k] = input[i];
+                    i += 1;
+                    k += 1;
+                }
+                else {
+                    if (input[i] < input[j]) {
+                        auxArray[k] = input[i];
+                        i += 1;
+                        k += 1;
+                    }
+                    else {
+                        auxArray[k] = input[j];
+                        j += 1;
+                        k += 1;
+                    }
+                }
+            }
+            
+        }
+        for l in start...end {
+            input[l] = auxArray[l - start];
+        }
+    }
+    
+    //************
+    //************
 }
 
 let array:[Int] = [2,5,7,3,9,1,8,10,4,6]
@@ -91,5 +185,8 @@ array.insertionSort
 array.selectionSort
 array.bubbleSort
 array.combSort
+
+array.quickSort
+array.mergeSort
 
 //: [Next](@next)
