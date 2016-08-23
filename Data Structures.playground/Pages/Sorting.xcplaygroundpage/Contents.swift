@@ -177,9 +177,53 @@ extension SequenceType where Generator.Element == Int {
     
     //************
     //************
+    
+    //0(n log n)
+    var heapSort: [Int] {
+        guard var list = self as? [Int] else {
+            return [Int]()
+        }
+        let count = list.count
+        heapify(&list, count)
+        var end = count - 1
+        while end > 0 {
+            (list[end], list[0]) = (list[0], list[end])
+            end -= 1
+            shiftDown(&list, 0, end)
+        }
+        return list
+    }
+    
+    private func shiftDown(inout list:[Int], _ start:Int, _ end:Int) {
+        var root = start
+        while root * 2 + 1 <= end {
+            let child = root * 2 + 1
+            var swap = root
+            if list[swap] < list[child] {
+                swap = child
+            }
+            if child + 1 <= end && list[swap] < list[child + 1] {
+                swap = child + 1
+            }
+            if swap == root {
+                return
+            } else {
+                (list[root], list[swap]) = (list[swap], list[root])
+                root = swap
+            }
+        }
+    }
+    
+    private func heapify(inout list:[Int], _ count:Int) {
+        var start = (count - 2) / 2
+        while start >= 0 {
+            shiftDown(&list, start, count - 1)
+            start -= 1
+        }
+    }
 }
 
-let array:[Int] = [2,5,7,3,9,1,8,10,4,6]
+let array:[Int] = [64,2,12,5,7,3,48,9,1,8,10,4,6]
 
 array.insertionSort
 array.selectionSort
@@ -188,5 +232,6 @@ array.combSort
 
 array.quickSort
 array.mergeSort
+array.heapSort
 
 //: [Next](@next)
