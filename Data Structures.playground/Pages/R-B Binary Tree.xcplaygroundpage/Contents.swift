@@ -406,4 +406,21 @@ print("================")
 print("Searching for 11")
 let eleven = tree.search(11)
 
+//AVL tree
+
+//One of the oldest, most well known and most popular tree data structure. It saves additional height information in each node and re balances tree if height of one node is higher than its sibling by 2. That keeps tree rigidly balanced so search is extremely fast on AVL tree. However that comes with a cost of rebalancing and that can make insert/delete operations slightly more expensive than other trees.
+
+//Red-Black tree
+
+//Most widely used self balancing binary search tree. It also saves additional information on nodes (black node or red node) and preserves tree balance based on certain rules about how nodes are colored. It can be less balanced than AVL tree (which means slower search) but with more efficient inserts and deletes. Also because only two colors required, Red-Black tree needs only one bit of additional information per node. All of this makes it most popular choice for general use cases.
+
+//Spacegoat tree
+//Doesn't save additional data on the nodes, so it uses less memory. Uses a parameter called "alpha" to determine different levels of balance throughout the tree. Not really better at anything else though
+
+//Splay tree
+//This tree performs tree rotations and brings element up to the top. It means that recently accessed elements are always near the top, so it's interesting for cases like cache implementations. However additional rotations on search adds additional overhead and if each element is as likely to be searched then splaying doesn’t do that much good.
+
+//Search is faster on AVL because it's better balanced than the RB tree, but insertion/deletion is faster on the RB because of it's balancing rules based on the node's color.
+//First choice for BST is a Red-Black tree as it is most universal data structure. However if your tree will be used mostly for search then take a look at AVL tree. If mostly same elements are retrieved again and again then Splay tree can be even better.
+
 //: [Next](@next)
