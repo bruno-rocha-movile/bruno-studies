@@ -123,7 +123,7 @@ extension SequenceType where Generator.Element == Int {
     //************
     //************
     
-    //0(n log2 n)
+    //0(n log n)
     var mergeSort: [Int] {
         guard var input = self as? [Int] else {
             return [Int]()
@@ -233,5 +233,16 @@ array.combSort
 array.quickSort
 array.mergeSort
 array.heapSort
+
+//Quicksort partitions a list into two sublists with all elements less than a “pivot” value in one list and all elements greater than the pivot value in the other then calls itself recursively to sort the sublists.
+
+//Mergesort divides a list equally into 2 sublists and calls itself recursively to sort the sublists. It then “merges” the 2 lists together by removing the smallest element from the sublists and appending it to the final list. This process is repeated until a sublist is empty when the other sublist is appended to the final list.
+
+//Heapsort creates a binary heap out of a list of data then removes the first element in the list and appends it to a final list. It repeats this until the heap is empty.
+
+//Quicksort is the fastest in average, but has some nasty worst behaviors (n2). It may not be used in applications which require a guarantee of response time, unless it is treated as an O(n2) algorithm.
+
+//And if n is large, you should be using heap sort / merge sort, for its guaranteed O(nlog n) time.
+//For these two, merge sort is slightly faster, but requires additional memory. It is best used if you are handling external data, like saving in a hard drive.
 
 //: [Next](@next)
