@@ -33,7 +33,7 @@ extension Collection where Iterator.Element == Int {
                 indexToThrowLesserElement += 1
             }
         }
-        //The "indexToThrowLesserElement" is now certainly positioned on a position with an element greater than our pivot, with lesser elements to the left, and greater elements to the right. Swap the pivot with this position to end the partitioning for this array.
+        //The "indexToThrowLesserElement" is now certainly positioned on a position with an element greater or equal than our pivot, with lesser elements to the left, and greater elements to the right. Swap the pivot with this position to end the partitioning for this array.
         (input[indexToThrowLesserElement], input[pivotIndex]) = (input[pivotIndex], input[indexToThrowLesserElement])
         let pivotsFinalIndex = indexToThrowLesserElement
         //Quick sort the elements to the right of the pivot
