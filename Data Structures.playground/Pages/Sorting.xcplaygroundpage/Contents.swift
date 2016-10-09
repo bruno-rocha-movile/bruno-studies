@@ -236,6 +236,10 @@ array.heapSort
 
 //Quicksort partitions a list into two sublists with all elements less than a “pivot” value in one list and all elements greater than the pivot value in the other then calls itself recursively to sort the sublists.
 
+//Worst case: when everything is already right (with the pivot on the first place), because the array will never be broken on smaller pieces.
+
+//=====================
+
 //Mergesort divides a list equally into 2 sublists and calls itself recursively to sort the sublists. It then “merges” the 2 lists together by removing the smallest element from the sublists and appending it to the final list. This process is repeated until a sublist is empty when the other sublist is appended to the final list.
 
 //Heapsort creates a binary heap out of a list of data then removes the first element in the list and appends it to a final list. It repeats this until the heap is empty.
