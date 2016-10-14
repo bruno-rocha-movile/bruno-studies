@@ -63,11 +63,75 @@ extension Collection where Iterator.Element == Int {
         partitionSlow(&greaterElements)
         input = lesserElements + equalElements + greaterElements
     }
+    
+    //********
+    //************
+    //***************
+    //*****************
+    
+    //0(n log n)
+    var mergeSort: [Int] {
+        guard let input = self as? [Int] else {
+            return [Int]()
+        }
+        return mergeSort(input)
+    }
+    
+    private func mergeSort(_ input: [Int]) -> [Int] {
+        guard input.count > 1 else {
+            return input
+        }
+        let half = input.count / 2
+        let leftArray = mergeSort([Int](input.prefix(upTo: half)))
+        let rightArray = mergeSort([Int](input.suffix(from: half)))
+        return merge(leftArray, with: rightArray)
+    }
+    
+    private func merge(_ leftArray: [Int], with rightArray: [Int]) -> [Int] {
+        var leftIndex = 0
+        var rightIndex = 0
+        var orderedArray = [Int]()
+        
+        // From these two arrays, compare their elements, and start adding these elements on the orderedArray, until one of the arrays end
+        
+        func oneOfTheArraysHasntEnded() -> Bool {
+            return leftIndex < leftArray.count && rightIndex < rightArray.count
+        }
+        
+        while oneOfTheArraysHasntEnded() {
+            if leftArray[leftIndex] < rightArray[rightIndex] {
+                orderedArray.append(leftArray[leftIndex])
+                leftIndex += 1
+            } else if leftArray[leftIndex] > rightArray[rightIndex] {
+                orderedArray.append(rightArray[rightIndex])
+                rightIndex += 1
+            } else {
+                orderedArray.append(leftArray[leftIndex])
+                leftIndex += 1
+                orderedArray.append(rightArray[rightIndex])
+                rightIndex += 1
+            }
+        }
+        
+        //If we are here, it means that one of the arrays doesn't have more elements to compare. So we just get whatever array is left, and append his elements to the ordered array.
+        while leftIndex < leftArray.count {
+            orderedArray.append(leftArray[leftIndex])
+            leftIndex += 1
+        }
+        
+        while rightIndex < rightArray.count {
+            orderedArray.append(rightArray[rightIndex])
+            rightIndex += 1
+        }
+        
+        return orderedArray
+    }
 }
 
 let array:[Int] = [64,2,12,5,7,3,48,9,1,8,10,4,6]
 
 array.quickSort
 array.quickSortSlow
+array.mergeSort
 
 //: [Next](@next)
