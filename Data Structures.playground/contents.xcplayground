@@ -9,5 +9,6 @@
         <page name='R-B Binary Tree'/>
         <page name='Sorting'/>
         <page name='Sorting (Swift 2.3)'/>
+        <page name='Graph'/>
     </pages>
 </playground>
