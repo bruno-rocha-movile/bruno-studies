@@ -137,7 +137,7 @@ extension Collection where Iterator.Element == Int {
     }
     
     func maxHeapify(_ input: inout [Int]) {
-        //maxheap: parent elements is always bigger | minheap: parent is smaller. I'm doing a maxheap
+        //maxheap: parent element is always bigger | minheap: parent is smaller. I'm doing a maxheap
         for i in 0..<input.count {
             //send elements the heap chain until it's bigger than it's children and smaller than it's parent
             shiftUp(valueAtIndex: i, at: &input)
