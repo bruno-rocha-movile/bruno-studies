@@ -128,23 +128,21 @@ extension Collection where Iterator.Element == Int {
     }
     
     var heapSort: [Int] {
-        guard let input = self as? [Int] else {
+        guard var input = self as? [Int] else {
             return [Int]()
         }
-        var heapified = maxHeapify(input)
-        heapSort(&heapified, lastElementIndex: heapified.count - 1)
-        return heapified
+        maxHeapify(&input)
+        heapSort(&input, lastElementIndex: input.count - 1)
+        return input
     }
     
-    func maxHeapify(_ input: [Int]) -> [Int] {
+    func maxHeapify(_ input: inout [Int]) {
         //maxheap: parent elements is always bigger | minheap: parent is smaller. I'm doing a maxheap
-        var heap: [Int] = []
-        for number in input {
-            //add elements and send it up the heap chain until it's bigger than it's children and smaller than it's parent
-            heap.append(number)
-            shiftUp(valueAtIndex: heap.count - 1, at: &heap)
+        for i in 0..<input.count {
+            //send elements the heap chain until it's bigger than it's children and smaller than it's parent
+            shiftUp(valueAtIndex: i, at: &input)
         }
-        return heap
+
     }
     
     func shiftUp(valueAtIndex index: Int, at heap: inout [Int]) {
