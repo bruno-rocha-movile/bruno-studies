@@ -155,7 +155,7 @@ class Graph {
                 let neighborVertex = edge.to
                 if neighborVertex.visited == false {
                     queue.enqueue(neighborVertex)
-                    neighborVertex.distance = (vertex.distance ?? 0) + 1
+                    neighborVertex.distance = vertex.distance! + 1
                     neighborVertex.visited = true
                 } else {
                     let indexOfEdge = (vertex.edges.index{$0 === edge})!
@@ -166,6 +166,16 @@ class Graph {
         return graph
     }
     
+    func depthFirstSearch(source: Vertex) -> [String] {
+        var exploredVertices = [source.data]
+        source.visited = true
+        for edge in source.edges {
+            if edge.to.visited == false {
+                exploredVertices += depthFirstSearch(source: edge.to)
+            }
+        }
+        return exploredVertices
+    }
 }
 
 let graph = Graph()
@@ -179,6 +189,9 @@ graph.createUndirectedEdge(between: a, and: c)
 graph.createUndirectedEdge(between: b, and: d)
 graph.createUndirectedEdge(between: b, and: c)
 
-let distanceGraph = graph.breadthFirstSearchShortestDistanceMinimumSpanningTree(source: a)
+//This operation ignores weight
+let distanceGraphTree = graph.breadthFirstSearchShortestDistanceMinimumSpanningTree(source: a)
+
+let depthSearch = graph.depthFirstSearch(source: a)
 
 //: [Next](@next)

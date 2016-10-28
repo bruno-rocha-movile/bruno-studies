@@ -126,6 +126,65 @@ extension Collection where Iterator.Element == Int {
         
         return orderedArray
     }
+    
+    var heapSort: [Int] {
+        guard let input = self as? [Int] else {
+            return [Int]()
+        }
+        var heapified = maxHeapify(input)
+        heapSort(&heapified, lastElementIndex: heapified.count - 1)
+        return heapified
+    }
+    
+    func maxHeapify(_ input: [Int]) -> [Int] {
+        //maxheap: parent elements is always bigger | minheap: parent is smaller. I'm doing a maxheap
+        var heap: [Int] = []
+        for number in input {
+            //add elements and send it up the heap chain until it's bigger than it's children and smaller than it's parent
+            heap.append(number)
+            shiftUp(valueAtIndex: heap.count - 1, at: &heap)
+        }
+        return heap
+    }
+    
+    func shiftUp(valueAtIndex index: Int, at heap: inout [Int]) {
+        let parentIndex = (index - 1) / 2
+        guard parentIndex >= 0 else {
+            return
+        }
+        if heap[parentIndex] < heap[index] {
+            (heap[parentIndex], heap[index]) = (heap[index], heap[parentIndex])
+            shiftUp(valueAtIndex: parentIndex, at: &heap)
+        }
+    }
+    
+    func shiftDown(valueAtIndex index: Int, at heap: inout [Int], heapSize: Int) {
+        let leftChildIndex = 2 * index + 1
+        let rightChildIndex = 2 * index + 2
+        var indexToSwap = index
+        if leftChildIndex <= heapSize && heap[indexToSwap] < heap[leftChildIndex] {
+            indexToSwap = leftChildIndex
+        }
+        if rightChildIndex <= heapSize && heap[indexToSwap] < heap[rightChildIndex] {
+            indexToSwap = rightChildIndex
+        }
+        guard index != indexToSwap else {
+            return
+        }
+        (heap[index], heap[indexToSwap]) = (heap[indexToSwap], heap[index])
+        shiftDown(valueAtIndex: indexToSwap, at: &heap, heapSize: heapSize)
+    }
+    
+    func heapSort(_ heap: inout [Int], lastElementIndex: Int) {
+        guard lastElementIndex > 0 else {
+            return
+        }
+        //the first element of the heap is the biggest element of the (current) array. swap it with the (current) last position and send the new first element down the heap
+        (heap[0], heap[lastElementIndex]) = (heap[lastElementIndex], heap[0])
+        let newLastElementIndex = lastElementIndex - 1
+        shiftDown(valueAtIndex: 0, at: &heap, heapSize: newLastElementIndex)
+        heapSort(&heap, lastElementIndex: newLastElementIndex)
+    }
 }
 
 let array:[Int] = [64,2,12,5,7,3,48,9,1,8,10,4,6]
@@ -133,5 +192,6 @@ let array:[Int] = [64,2,12,5,7,3,48,9,1,8,10,4,6]
 array.quickSort
 array.quickSortSlow
 array.mergeSort
+array.heapSort
 
 //: [Next](@next)

@@ -24,7 +24,7 @@ public class Queue<T> {
         return first == nil
     }
     
-    func enqueue(value: Element) {
+    func enqueue(_ value: Element) {
         guard !self.isEmpty else {
             first = Node<Element>(value: value)
             last = first
