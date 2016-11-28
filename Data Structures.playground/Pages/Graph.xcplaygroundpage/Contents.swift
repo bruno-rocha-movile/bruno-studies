@@ -7,6 +7,13 @@ import Foundation
 //****************************
 //****************************
 
+func < (lhs: Float?, rhs: Float?) -> Bool {
+    guard let l = lhs, let r = rhs else {
+        return false
+    }
+    return l < r
+}
+
 //Queue
 
 class Node<T> {
@@ -70,19 +77,32 @@ public class Queue<T> {
 //****************************
 //****************************
 
-public class Vertex {
+public class Vertex: Hashable {
     public var data: String
     public let index: Int
     public var edges: [Edge]
     
     //BFS properties
     var visited = false
-    var distance: Int? = nil
+    var distance: Float? = nil
+    
+    //Djikstra property
+    var previous: Vertex? = nil
     
     init(data: String, index: Int) {
         self.data = data
         self.index = index
         edges = []
+    }
+    
+    public var hashValue:Int {
+        get {
+            return data.hashValue
+        }
+    }
+    
+    public static func == (lhs:Vertex, rhs:Vertex) -> Bool {
+        return lhs.hashValue == rhs.hashValue
     }
 }
 
@@ -140,7 +160,7 @@ class Graph {
         createDirectedEdge(between: v2, and: v1, weight: weight)
     }
     
-    //BreadthFirstSearch that adds distance data to the vertices.
+    //BreadthFirstSearch that adds distance data to the vertices and calculates the minimum spanning tree -> minimum amount of edges needed to get to every vertex in the graph.
     func breadthFirstSearchShortestDistanceMinimumSpanningTree(source: Vertex) -> Graph {
         
         let graph = self.duplicated
@@ -166,6 +186,8 @@ class Graph {
         return graph
     }
     
+    //Better at finding components on a sparse graph
+    //Not here: Can be used to find bridges
     func depthFirstSearch(source: Vertex) -> [String] {
         var exploredVertices = [source.data]
         source.visited = true
@@ -176,6 +198,34 @@ class Graph {
         }
         return exploredVertices
     }
+    
+    func djikstra(source src: Vertex, target: Vertex) -> [Vertex] {
+        let graph = self.duplicated
+        var vertices = graph.vertices
+        let source = vertices.filter{return $0.data == src.data}.first!
+        var previous : [Vertex:Vertex] = [:]
+        
+        source.distance = 0
+        print("aaaa")
+        while vertices.isEmpty == false {
+            let vertex = vertices.sorted(by: ({ return $0.distance < $1.distance }) ).first!
+            if vertex == target {
+                return []
+            }
+            vertices.remove(at: vertices.index(of: vertex)!)
+            print("aaaa")
+            for edge in vertex.edges {
+                let neighbor = edge.to
+                let totalDist = (vertex.distance ?? 0) + edge.weight!
+                if totalDist < neighbor.distance {
+                    neighbor.distance = totalDist
+                    previous[neighbor] = vertex
+                }
+            }
+        }
+        
+        return []
+    }
 }
 
 let graph = Graph()
@@ -184,14 +234,16 @@ let a = graph.createVertex(data: "a")
 let b = graph.createVertex(data: "b")
 let c = graph.createVertex(data: "c")
 let d = graph.createVertex(data: "d")
-graph.createUndirectedEdge(between: a, and: b)
-graph.createUndirectedEdge(between: a, and: c)
-graph.createUndirectedEdge(between: b, and: d)
-graph.createUndirectedEdge(between: b, and: c)
+graph.createUndirectedEdge(between: a, and: b, weight: 10)
+graph.createUndirectedEdge(between: a, and: c, weight: 12)
+graph.createUndirectedEdge(between: b, and: d, weight: 14)
+graph.createUndirectedEdge(between: b, and: c, weight: 16)
 
 //This operation ignores weight
 let distanceGraphTree = graph.breadthFirstSearchShortestDistanceMinimumSpanningTree(source: a)
 
 let depthSearch = graph.depthFirstSearch(source: a)
+
+graph.djikstra(source: a, target: d)
 
 //: [Next](@next)

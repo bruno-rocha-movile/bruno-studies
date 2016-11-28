@@ -156,6 +156,17 @@ extension Collection where Iterator.Element == Int {
         }
     }
     
+    func heapSort(_ heap: inout [Int], lastElementIndex: Int) {
+        guard lastElementIndex > 0 else {
+            return
+        }
+        //the first element of the heap is the biggest element of the (current) array. swap it with the (current) last position and send the new first element down the heap
+        (heap[0], heap[lastElementIndex]) = (heap[lastElementIndex], heap[0])
+        let newLastElementIndex = lastElementIndex - 1
+        shiftDown(valueAtIndex: 0, at: &heap, heapSize: newLastElementIndex)
+        heapSort(&heap, lastElementIndex: newLastElementIndex)
+    }
+    
     func shiftDown(valueAtIndex index: Int, at heap: inout [Int], heapSize: Int) {
         let leftChildIndex = 2 * index + 1
         let rightChildIndex = 2 * index + 2
@@ -171,17 +182,6 @@ extension Collection where Iterator.Element == Int {
         }
         (heap[index], heap[indexToSwap]) = (heap[indexToSwap], heap[index])
         shiftDown(valueAtIndex: indexToSwap, at: &heap, heapSize: heapSize)
-    }
-    
-    func heapSort(_ heap: inout [Int], lastElementIndex: Int) {
-        guard lastElementIndex > 0 else {
-            return
-        }
-        //the first element of the heap is the biggest element of the (current) array. swap it with the (current) last position and send the new first element down the heap
-        (heap[0], heap[lastElementIndex]) = (heap[lastElementIndex], heap[0])
-        let newLastElementIndex = lastElementIndex - 1
-        shiftDown(valueAtIndex: 0, at: &heap, heapSize: newLastElementIndex)
-        heapSort(&heap, lastElementIndex: newLastElementIndex)
     }
 }
 
