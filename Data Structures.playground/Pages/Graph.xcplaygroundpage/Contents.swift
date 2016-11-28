@@ -6,14 +6,6 @@ import Foundation
 //****************************
 //****************************
 //****************************
-
-func < (lhs: Float?, rhs: Float?) -> Bool {
-    guard let l = lhs, let r = rhs else {
-        return false
-    }
-    return l < r
-}
-
 //Queue
 
 class Node<T> {
@@ -85,9 +77,6 @@ public class Vertex: Hashable {
     //BFS properties
     var visited = false
     var distance: Float? = nil
-    
-    //Djikstra property
-    var previous: Vertex? = nil
     
     init(data: String, index: Int) {
         self.data = data
@@ -199,32 +188,57 @@ class Graph {
         return exploredVertices
     }
     
-    func djikstra(source src: Vertex, target: Vertex) -> [Vertex] {
+    func djikstra(source src: Vertex, target tgt: Vertex) -> [String] {
+        
         let graph = self.duplicated
-        var vertices = graph.vertices
-        let source = vertices.filter{return $0.data == src.data}.first!
-        var previous : [Vertex:Vertex] = [:]
+        let source = graph.vertices.filter{return $0.data == src.data}.first!
+        let target = graph.vertices.filter{return $0.data == tgt.data}.first!
+        
+        var vertices: [Vertex] = graph.vertices
+        var previous: [Vertex:Vertex] = [:]
+        
+        func vertexWithSmallerDistance() -> Vertex {
+            var smallestDistanceVertex: Vertex? = nil
+            for v in vertices {
+                if smallestDistanceVertex == nil || (v.distance != nil && v.distance! < smallestDistanceVertex!.distance!) {
+                    smallestDistanceVertex = v
+                }
+            }
+            return smallestDistanceVertex!
+        }
+        
+        func path() -> [String] {
+            var path: [String] = [target.data]
+            var prev = previous[target]
+            while prev != nil {
+                path.insert(prev!.data, at: 0)
+                prev = previous[prev!]
+            }
+            return path
+        }
         
         source.distance = 0
-        print("aaaa")
         while vertices.isEmpty == false {
-            let vertex = vertices.sorted(by: ({ return $0.distance < $1.distance }) ).first!
-            if vertex == target {
-                return []
-            }
+            let vertex = vertexWithSmallerDistance()
+            /*if vertex.data == target.data {
+                return path()
+            }*/
+            vertex.visited = true
             vertices.remove(at: vertices.index(of: vertex)!)
-            print("aaaa")
             for edge in vertex.edges {
                 let neighbor = edge.to
+                guard neighbor.visited == false else {
+                    continue
+                }
                 let totalDist = (vertex.distance ?? 0) + edge.weight!
-                if totalDist < neighbor.distance {
+                if neighbor.distance == nil || totalDist < neighbor.distance! {
                     neighbor.distance = totalDist
                     previous[neighbor] = vertex
                 }
             }
         }
         
-        return []
+        return path()
     }
 }
 
@@ -234,16 +248,23 @@ let a = graph.createVertex(data: "a")
 let b = graph.createVertex(data: "b")
 let c = graph.createVertex(data: "c")
 let d = graph.createVertex(data: "d")
-graph.createUndirectedEdge(between: a, and: b, weight: 10)
-graph.createUndirectedEdge(between: a, and: c, weight: 12)
-graph.createUndirectedEdge(between: b, and: d, weight: 14)
+let e = graph.createVertex(data: "e")
+let f = graph.createVertex(data: "f")
+graph.createUndirectedEdge(between: a, and: b, weight: 7)
+graph.createUndirectedEdge(between: a, and: c, weight: 9)
+graph.createUndirectedEdge(between: c, and: d, weight: 11)
+graph.createUndirectedEdge(between: d, and: e, weight: 6)
+graph.createUndirectedEdge(between: e, and: f, weight: 9)
+graph.createUndirectedEdge(between: f, and: a, weight: 14)
 graph.createUndirectedEdge(between: b, and: c, weight: 16)
+graph.createUndirectedEdge(between: b, and: d, weight: 15)
+graph.createUndirectedEdge(between: c, and: f, weight: 2)
 
 //This operation ignores weight
 let distanceGraphTree = graph.breadthFirstSearchShortestDistanceMinimumSpanningTree(source: a)
 
 let depthSearch = graph.depthFirstSearch(source: a)
 
-graph.djikstra(source: a, target: d)
+let djikstra = graph.djikstra(source: a, target: e)
 
 //: [Next](@next)
