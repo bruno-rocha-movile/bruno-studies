@@ -188,6 +188,7 @@ class Graph {
         return exploredVertices
     }
     
+    //O([m+n]log n)
     func djikstra(source src: Vertex, target tgt: Vertex) -> [String] {
         
         let graph = self.duplicated
@@ -256,7 +257,7 @@ graph.createUndirectedEdge(between: c, and: d, weight: 11)
 graph.createUndirectedEdge(between: d, and: e, weight: 6)
 graph.createUndirectedEdge(between: e, and: f, weight: 9)
 graph.createUndirectedEdge(between: f, and: a, weight: 14)
-graph.createUndirectedEdge(between: b, and: c, weight: 16)
+graph.createUndirectedEdge(between: b, and: c, weight: 10)
 graph.createUndirectedEdge(between: b, and: d, weight: 15)
 graph.createUndirectedEdge(between: c, and: f, weight: 2)
 
