@@ -195,17 +195,55 @@ class Graph {
         let source = graph.vertices.filter{return $0.data == src.data}.first!
         let target = graph.vertices.filter{return $0.data == tgt.data}.first!
         
-        var vertices: [Vertex] = graph.vertices
+        var heap: [Vertex] = [source]
+        var heapSize: Int = 1
+
         var previous: [Vertex:Vertex] = [:]
+        var heapIndex: [Vertex:Int] = [:]
         
         func vertexWithSmallerDistance() -> Vertex {
-            var smallestDistanceVertex: Vertex? = nil
-            for v in vertices {
-                if smallestDistanceVertex == nil || (v.distance != nil && v.distance! < smallestDistanceVertex!.distance!) {
-                    smallestDistanceVertex = v
-                }
+            let smallestDistanceVertex: Vertex = heap.first!
+            if heapSize > 1 {
+                (heap[heapSize - 1], heap[0]) = (heap[0], heap[heapSize - 1])
+                (heapIndex[heap[0]], heapIndex[heap[heapSize - 1]]) = (heapIndex[heap[heapSize - 1]], heapIndex[heap[0]])
             }
-            return smallestDistanceVertex!
+            heapSize -= 1
+            shiftDown(valueAtIndex: 0)
+            return smallestDistanceVertex
+        }
+        
+        func shiftDown(valueAtIndex index: Int) {
+            guard heapSize > 1 else {
+                return
+            }
+            let leftChildIndex = 2 * index + 1
+            let rightChildIndex = 2 * index + 2
+            var indexToSwap = index
+            if leftChildIndex <= heapSize - 1 && heap[indexToSwap].distance! > heap[leftChildIndex].distance! {
+                indexToSwap = leftChildIndex
+            }
+            if rightChildIndex <= heapSize - 1 && heap[indexToSwap].distance! > heap[rightChildIndex].distance! {
+                indexToSwap = rightChildIndex
+            }
+            guard index != indexToSwap else {
+                return
+            }
+            (heap[index], heap[indexToSwap]) = (heap[indexToSwap], heap[index])
+            (heapIndex[heap[index]], heapIndex[heap[indexToSwap]]) = (heapIndex[heap[indexToSwap]],heapIndex[heap[index]])
+            shiftDown(valueAtIndex: indexToSwap)
+        }
+        
+        func shiftUp(vertex: Vertex) {
+            let index = heapIndex[vertex]!
+            let parentIndex = (index - 1) / 2
+            guard parentIndex >= 0 else {
+                return
+            }
+            if heap[parentIndex].distance! > heap[index].distance! {
+                (heap[parentIndex], heap[index]) = (heap[index], heap[parentIndex])
+                (heapIndex[heap[parentIndex]], heapIndex[heap[index]]) = (heapIndex[heap[index]], heapIndex[heap[parentIndex]])
+                shiftUp(vertex: vertex)
+            }
         }
         
         func path() -> [String] {
@@ -217,15 +255,13 @@ class Graph {
             }
             return path
         }
-        
-        source.distance = 0
-        while vertices.isEmpty == false {
+
+        while heapSize > 0 {
             let vertex = vertexWithSmallerDistance()
             /*if vertex.data == target.data {
                 return path()
             }*/
             vertex.visited = true
-            vertices.remove(at: vertices.index(of: vertex)!)
             for edge in vertex.edges {
                 let neighbor = edge.to
                 guard neighbor.visited == false else {
@@ -235,6 +271,12 @@ class Graph {
                 if neighbor.distance == nil || totalDist < neighbor.distance! {
                     neighbor.distance = totalDist
                     previous[neighbor] = vertex
+                    if heapIndex[neighbor] == nil {
+                        heap.insert(neighbor, at: heapSize)
+                        heapIndex[neighbor] = heapSize
+                        heapSize += 1
+                    }
+                    shiftUp(vertex: neighbor)
                 }
             }
         }
