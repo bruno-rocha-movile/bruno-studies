@@ -197,9 +197,9 @@ class Graph {
         
         var heap: [Vertex] = [source]
         var heapSize: Int = 1
+        var heapIndex: [Vertex:Int] = [:]
 
         var previous: [Vertex:Vertex] = [:]
-        var heapIndex: [Vertex:Int] = [:]
         
         func vertexWithSmallerDistance() -> Vertex {
             let smallestDistanceVertex: Vertex = heap.first!
