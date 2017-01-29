@@ -31,12 +31,15 @@ func knapSack(values: [Int], weights: [Int], maxWeight: Int) -> Int {
         var table = Array<Array<Int>>(repeating: Array<Int>(repeating: 0, count: maxWeight + 1), count: arraySize + 1)
         for n in 0...arraySize {
             for w in 0...maxWeight {
+                let thisItem = n-1
                 if (n==0 || w==0) {
                     table[n][w] = 0;
-                } else if (weights[n-1] <= w) {
-                    table[n][w] = max(values[n-1] + table[n-1][w-weights[n-1]],  table[n-1][w]);
+                } else if (weights[thisItem] <= w) {
+                    //If the item can be added, the value of this table's position will be the best of these cases: The value of the item, plus whatever the best case is of the remaining weight, or the best case if you don't add it (which is already calculated)
+                    table[n][w] = max(values[thisItem] + table[thisItem][w-weights[thisItem]],  table[thisItem][w]);
                 } else {
-                    table[n][w] = table[n-1][w];
+                    //If it can't be added, then the value will be the best case without adding the item
+                    table[n][w] = table[thisItem][w];
                 }
             }
         }
