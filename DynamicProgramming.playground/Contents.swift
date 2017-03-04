@@ -94,6 +94,21 @@ func coinChange(coins: [Int], amount: Int) -> Int {
             table[i][j] = x + y
         }
     }
+    
+    func getSolution(_ i: Int, _ j: Int) -> [[Int]] {
+        if j < 0 || i < 0 {
+            //not a solution
+            return []
+        }
+        if i == 0 && j == 0 {
+            //valid solution, return an empty array where the coins will be appended
+            return [[]]
+        }
+        return getSolution(i - coins[j], j).map{var a = $0; a.append(coins[j]);return a} + getSolution(i, j - 1)
+    }
+    print("coin combinations: \(table[amount][coins.count - 1])")
+    print(getSolution(amount, coins.count-1))
+    
     return table[amount][coins.count - 1];
 }
 //1.1.1.1, 2.2, 2.1.1, 3.1
