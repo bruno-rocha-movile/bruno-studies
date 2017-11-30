@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<playground version='6.0' target-platform='ios'>
+    <pages>
+        <page name='Main'/>
+        <page name='Graph Sample'/>
+        <page name='Segment Tree'/>
+        <page name='Stack'/>
+        <page name='Queue'/>
+        <page name='Trie'/>
+        <page name='HashTable'/>
+        <page name='Binary Search'/>
+        <page name='Heap'/>
+    </pages>
+</playground>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<playground version='6.0' target-platform='ios'>
+    <pages>
+        <page name='Linked List'/>
+        <page name='Queue'/>
+        <page name='Stack'/>
+        <page name='Binary Tree'/>
+        <page name='Hash Table'/>
+        <page name='R-B Binary Tree'/>
+        <page name='Sorting'/>
+        <page name='Sorting (Swift 2.3)'/>
+        <page name='Graph'/>
+    </pages>
+</playground>
